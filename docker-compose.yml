@@ -1,0 +1,32 @@
+version: '3.0'
+services:
+ h2:
+  image: buildo/h2database:latest
+  container_name: yeshenko-database
+  restart: always
+  volumes:
+   - ./src/database:/h2-data
+  ports:
+   - "1521:1521"
+ app:
+  build: .
+  image: 24_react:latest
+  container_name: yeshenko-spring
+  restart: always
+  environment:
+   - DB_HOST=h2:1521
+  depends_on: 
+   - h2
+  links:
+   - h2
+  ports:
+   - "8080:8080"
+ react:
+  build: ./react
+  image: react:latest
+  container_name: yeshenko-react
+  restart: always
+  ports:
+   - "8008:80"
+  links:
+   - app
